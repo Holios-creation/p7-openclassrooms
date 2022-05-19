@@ -1,0 +1,134 @@
+.Footer {
+    position:fixed;
+    bottom:0;
+    width:100%;
+    background:white;
+    border-radius:30px 30px 0 0;
+    box-shadow: 0px -5px 5px rgb(235, 235, 235);
+}
+
+.Footer-footer {
+    padding:30px;
+}
+
+.login {
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.login input {
+    width:calc(100% - 20px);
+    height:20px;
+    border: 1px solid rgb(255, 208, 208);
+    padding:5px 10px;
+    border-radius:10px;
+}
+
+.login input:focus {
+    outline: none;
+}
+
+.login input:valid {
+    border: 1px solid #6AFF4D !important;
+}
+.login input:invalid {
+    border: 1px solid rgb(255, 77, 77) !important;
+}
+
+.login input[type=submit] {
+    border: 1px solid rgb(255, 208, 208) !important;
+    background: rgb(255, 208, 208);
+    width:100%;
+    padding:10px 0 25px 0;
+}
+
+.items {
+    width:100%;
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.items .buttons, .items .add {
+    background:rgb(255, 208, 208);
+    padding:5px 12px;
+    border-radius:20px;
+    text-align:center;
+    text-decoration: none;
+}
+
+.items .add {
+    padding:5px 7px;
+}
+
+.items .add .icons {
+    color:white;
+    width:15px;
+    height:15px;
+}
+
+.items p {
+    margin:0;
+    padding:0;
+    color:white;
+    font-size:15px;
+    font-weight: bold;
+}
+
+.message {
+    width:100%;
+    display:flex;
+    flex-direction:row;
+    gap:15px;
+}
+
+.message input{
+    color:white;
+    font-weight: bold;
+    padding:5px 10px;
+    border: 1px solid rgb(255, 208, 208);
+    background:rgb(255, 208, 208);
+    height:100%;
+    width:100%;
+    border-radius:20px;
+}
+
+.message input::placeholder{
+    color: white;
+    font-style: italic;
+}
+
+.message input:focus {
+    outline: none;
+}
+
+.message .image {
+    width:17px;
+    height:17px;
+    padding:5px;
+    background:rgb(255, 208, 208);
+    border-radius:50%;
+    display:flex;
+    justify-content: center;
+    align-items:center;
+}
+
+.message .image .icons {
+    color:white;
+    width:17px;
+    height:14px;
+}
+
+.message .submit {
+    width:27px;
+    height:27px;
+    border:none;
+    background:none;
+    padding:0;
+}
+
+.message .submit .icons {
+    width:26px;
+    height:26px;
+}

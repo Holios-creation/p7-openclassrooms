@@ -1,0 +1,47 @@
+.Header {
+    margin:0;
+    height:60px;
+    width: 100%;
+    background: white;
+    box-shadow: 0px 5px 5px rgb(235, 235, 235);
+}
+
+.Header-header {
+    padding:15px 30px;
+    display:flex;
+    flex-direction:row;
+    flex-wrap: nowrap;
+    justify-content:space-between;
+}
+
+.left {
+    display:flex;
+    flex-direction:row;
+    flex-wrap: nowrap;
+}
+
+.logo {
+    width:30px;
+    height:30px;
+}
+
+.title {
+    margin:0 10px;
+    font-size:25px;
+    color:rgb(255, 208, 208);
+}
+
+.right {
+    display:flex;
+    flex-direction:row;
+    flex-wrap: nowrap;
+    justify-content:flex-end;
+    gap:10px;
+    margin-top:5px;
+}
+
+.icons {
+    width:20px;
+    height:20px;
+    color:rgb(255, 208, 208);
+}
