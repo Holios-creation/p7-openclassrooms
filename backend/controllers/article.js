@@ -8,7 +8,7 @@ const db = require('../database/dataBase');
  * Fonction de traitement de la requete d'affichage de tous les articles
  */
 exports.getArticles = (req, res, next) => {
-    db.query('SELECT * FROM groupomania.article ORDER BY id DESC', 
+    db.query('SELECT groupomania.article.titre, groupomania.article.date, groupomania.article.image, groupomania.article.like, groupomania.article.id, groupomania.utilisateur.name, groupomania.utilisateur.profilePicture, COUNT(groupomania.comment.id) as commentaire FROM groupomania.article LEFT JOIN groupomania.utilisateur ON groupomania.article.idCreator = groupomania.utilisateur.id LEFT JOIN groupomania.comment ON groupomania.utilisateur.id = groupomania.comment.idArticle WHERE groupomania.article.idCreator = groupomania.utilisateur.id AND groupomania.utilisateur.id = groupomania.comment.idArticle GROUP BY groupomania.article.id ORDER BY groupomania.article.id DESC', 
     (error, results) => {
         console.log(results);
         if (error) {
@@ -19,10 +19,10 @@ exports.getArticles = (req, res, next) => {
 };
 
 /**
- * Fonction de traitement de la requete d'affichage des information utilisateur d'un article en fonction de son Id
+ * Fonction de traitement de la requete d'affichage du nombre de commentaires d'un article en fonction de son Id
  */
-exports.getCreatorArticle = (req, res, next) => {
-    db.query('SELECT id, name, profilePicture FROM groupomania.utilisateur WHERE id = ?',
+exports.getArticleComment = (req, res, next) => {
+    db.query('SELECT * FROM groupomania.comment WHERE idArticle = ?',
     [req.params.id],
      (error, result) => {
         if (error) {
@@ -78,18 +78,6 @@ exports.likeArticle = (req, res, next) => {
     })
     .catch(error => res.status(404).json({ error }));
 };
-
-exports.getArticleComment = (req, res, next) => {
-    db.query('SELECT * FROM groupomania.comments WHERE idArticle = ?',
-    [req.params.id],
-    (error, results) => {
-        console.log(results);
-        if (error) {
-            return res.status(400).json({ error });
-        }
-        return res.status(200).json(results);
-    });
-}
 
 exports.addArticleComment = (req, res, next) => {
     db.query(`INSERT INTO groupomania.comment (idArticle, date, text) VALUES ( ?, NOW(), ?)`,

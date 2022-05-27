@@ -3,6 +3,7 @@
  */
 const express = require('express');
 const router = express.Router();
+const multer = require('../middleware/multer-config');
 
 /**
  * Importation du fichier pour l'éxécution des fonction associé à la demande
@@ -12,7 +13,7 @@ const userCtrl = require('../controllers/user');
 /**
  * Définition de la route /signup
  */
-router.post('/signup', userCtrl.signupUser);
+router.post('/signup', multer, userCtrl.signupUser);
 
 /**
  * Définition de la route /login

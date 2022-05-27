@@ -4,6 +4,7 @@
     width: 100%;
     background: white;
     box-shadow: 0px 5px 5px rgb(235, 235, 235);
+    position:fixed;
 }
 
 .Header-header {

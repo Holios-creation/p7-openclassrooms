@@ -1,3 +1,4 @@
+import '../styles/Error.css';
 import { useParams } from 'react-router-dom'
 
 function Error() {
@@ -6,8 +7,12 @@ function Error() {
     var error = erreur ? erreur : "Oups 🙈 Cette page n'existe pas"
 
     return (
-        <div>
-            <h1>{error}</h1>
+        <div className="Error">
+            <div className="Error-error">
+                <div className="text">
+                    <h1>{error}</h1>
+                </div>
+            </div>
         </div>
     )
 }

@@ -18,12 +18,17 @@ exports.signupUser = (req, res, next) => {
           message: 'L\'email est déjà utilisé.',
         });
       } else {
+        console.log("ok");
         //hashage du mot de passe//
         bcrypt
           .hash(req.body.password, 10)
           .then((hash) => {
+            console.log(req.body.email);
+            console.log(req.body.name);
+            console.log(req.protocol + '://' + req.get('host') + '/images/' + req.file.filename);
+            console.log(hash);
             //Add to BDD +injection sql
-            db.query(`INSERT INTO groupomania.utilisateur (email, name, profilePicture, password ) VALUES ('${req.body.email}','${req.body.name}','${req.body.profilePicture}','${hash}')`,
+            db.query(`INSERT INTO groupomania.utilisateur (email, name, profilePicture, password ) VALUES ('${req.body.email}','${req.body.name}','${req.protocol}://${req.get('host')}/images/${req.file.filename}','${hash}')`,
               (err, fields) => {
                 if (err) {
                   return res.status(400).json(err);

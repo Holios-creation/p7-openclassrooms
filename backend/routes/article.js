@@ -22,19 +22,9 @@ router.get('/', articleCtrl.getArticles);
 router.post('/', auth, multer, articleCtrl.addArticle);
 
 /**
- * Définition de la route /:id pour une demande GET
- */
-router.get('/creator/:id', articleCtrl.getCreatorArticle);
-
-/**
  * Définition de la route /:id/like pour une demande POST
  */
 router.post('/like/:id', auth, articleCtrl.likeArticle);
-
-/**
- * Définition de la route / pour une demande GET
- */
-router.get('/comment/:id', articleCtrl.getArticleComment);
 
 /**
  * Définition de la route / pour une demande POST
