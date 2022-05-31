@@ -9,6 +9,7 @@ const db = require('../database/dataBase');
  * Fonction de traitement de la requete d'inscription
  */
 exports.signupUser = (req, res, next) => {
+  console.log(req)
   db.query(`SELECT * FROM groupomania.utilisateur WHERE email = ?`,
     [req.body.email],
     (err, results) => {

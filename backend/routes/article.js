@@ -17,6 +17,11 @@ const multer = require('../middleware/multer-config');
 router.get('/', articleCtrl.getArticles);
 
 /**
+ * Définition de la route / pour une demande GET
+ */
+ router.get('/comment/:id', articleCtrl.getArticleComment);
+
+/**
  * Définition de la route / pour une demande POST
  */
 router.post('/', auth, multer, articleCtrl.addArticle);
@@ -29,7 +34,17 @@ router.post('/like/:id', auth, articleCtrl.likeArticle);
 /**
  * Définition de la route / pour une demande POST
  */
-router.post('/comment/:id', auth, multer, articleCtrl.addArticleComment);
+router.post('/comment/:id', auth, articleCtrl.addArticleComment);
+
+/**
+ * Définition de la route / pour une demande GET
+ */
+router.get('/user', auth, articleCtrl.getDataUser);
+
+/**
+ * Définition de la route / pour une demande PUT
+ */
+ router.put('/user', auth, articleCtrl.modifyDataUser);
 
 /**
  * Renvoie du résultat de la requete

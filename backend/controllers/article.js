@@ -8,7 +8,7 @@ const db = require('../database/dataBase');
  * Fonction de traitement de la requete d'affichage de tous les articles
  */
 exports.getArticles = (req, res, next) => {
-    db.query('SELECT groupomania.article.titre, groupomania.article.date, groupomania.article.image, groupomania.article.like, groupomania.article.id, groupomania.utilisateur.name, groupomania.utilisateur.profilePicture, COUNT(groupomania.comment.id) as commentaire FROM groupomania.article LEFT JOIN groupomania.utilisateur ON groupomania.article.idCreator = groupomania.utilisateur.id LEFT JOIN groupomania.comment ON groupomania.utilisateur.id = groupomania.comment.idArticle WHERE groupomania.article.idCreator = groupomania.utilisateur.id AND groupomania.utilisateur.id = groupomania.comment.idArticle GROUP BY groupomania.article.id ORDER BY groupomania.article.id DESC', 
+    db.query('SELECT groupomania.article.titre, groupomania.article.date, groupomania.article.image, groupomania.article.like, groupomania.article.id, groupomania.utilisateur.name, groupomania.utilisateur.profilePicture, COUNT(groupomania.utilisateur.id) as comment FROM groupomania.article LEFT JOIN groupomania.utilisateur ON groupomania.article.idCreator = groupomania.utilisateur.id INNER JOIN groupomania.comment ON groupomania.article.id = groupomania.comment.idArticle WHERE groupomania.article.idCreator = groupomania.utilisateur.id AND groupomania.article.id = groupomania.comment.idArticle GROUP BY groupomania.article.id ORDER BY groupomania.article.id DESC', 
     (error, results) => {
         console.log(results);
         if (error) {
@@ -90,4 +90,34 @@ exports.addArticleComment = (req, res, next) => {
             message: 'Votre commentaire à été publié !'
         })
     });
+}
+
+exports.getDataUser = (req, res, next) => {
+    db.query(`SELECT email, name FROM groupomania.utilisateur WHERE id = ?`,
+    [req.auth.userId],
+    (error, result) => {
+        if (error) {
+            return res.status(400).json({ error });
+        }
+        return res.status(200).json(result);
+    });
+}
+
+exports.modifyDataUser = (req, res, next) => {
+    //hashage du mot de passe//
+    bcrypt
+    .hash(req.body.password, 10)
+    .then((hash) => {
+        db.query(`UPDATE groupomania.utilisateur SET email = ?, name = ?, password = ? WHERE id = ?`,
+        [req.body.email, req.body.name, hash, req.auth.userId],
+        (error, result) => {
+            if (error) {
+                return res.status(400).json({ error });
+            }
+            return res.status(201).json({
+                message: 'Les informations de l\'utilisateur ont été modifées !'
+            })
+        });
+    })
+    .catch((error) => res.status(500).json({ error }));
 }

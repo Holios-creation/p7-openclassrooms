@@ -43,6 +43,10 @@
     padding:10px 0 25px 0;
 }
 
+.redirectionLink {
+    color:black;
+}
+
 .items {
     width:100%;
     display:flex;
