@@ -9,7 +9,6 @@ const db = require('../database/dataBase');
  * Fonction de traitement de la requete d'inscription
  */
 exports.signupUser = (req, res, next) => {
-  console.log(req)
   db.query(`SELECT * FROM groupomania.utilisateur WHERE email = ?`,
     [req.body.email],
     (err, results) => {
@@ -24,10 +23,6 @@ exports.signupUser = (req, res, next) => {
         bcrypt
           .hash(req.body.password, 10)
           .then((hash) => {
-            console.log(req.body.email);
-            console.log(req.body.name);
-            console.log(req.protocol + '://' + req.get('host') + '/images/' + req.file.filename);
-            console.log(hash);
             //Add to BDD +injection sql
             db.query(`INSERT INTO groupomania.utilisateur (email, name, profilePicture, password ) VALUES ('${req.body.email}','${req.body.name}','${req.protocol}://${req.get('host')}/images/${req.file.filename}','${hash}')`,
               (err, fields) => {

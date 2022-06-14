@@ -1,32 +1,36 @@
 import '../styles/Compte.css';
 import React, { useState, useEffect } from 'react';
 import auth from '../functions/auth';
+import handleSubmit from '../functions/compteData';
 import { Navigate } from "react-router-dom";
 
 export default function Compte() {
     const [Data, setData] = useState([])
 
     useEffect(() => {
+        const fetchUser = async () => {
+            const token = sessionStorage.getItem('token');
 
-        const token = sessionStorage.getItem('token');
+            const headers = new Headers();
+            headers.append('Authorization', `Bearer ${token}`);
 
-        const headers = new Headers();
-        headers.append('Authorization', `Bearer ${token}`);
-
-        const options = {
-            method: 'GET',
-            headers
-        };
-        
-        fetch("http://localhost:3001/api/article/user", options)
-        .then((response) =>
-            {
-                response.json()
-                .then((data) => {
-                    console.log(data)
-                    setData(data);
+            const options = {
+                method: 'GET',
+                headers
+            };
+            
+            fetch("http://localhost:3001/api/article/user", options)
+            .then((response) =>
+                {
+                    response.json()
+                    .then((data) => {
+                        console.log(data)
+                        setData(data);
+                })
             })
-        })
+        }
+
+        fetchUser()
 
     }, []);
 
@@ -36,51 +40,13 @@ export default function Compte() {
 
     }
 
-    function handleSubmit(event) {
-        const token = sessionStorage.getItem('token');
-
-        const headers = new Headers();
-        headers.append('Authorization', `Bearer ${token}`);
-        
-        if(/^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)*\.[\w-]{2,4}$/.test(document.getElementById('email').value) === true && document.getElementById('email').value !== "" && /^[0-9a-zA-Z\sÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØŒŠþÙÚÛÜÝŸàáâãäåæçèéêëìíîïðñòóôõöøœšÞùúûüýÿ*-+/=@#(!?:.,_$€§%^¨£)]*$/.test(document.getElementById('mdp').value) === true && document.getElementById('mdp').value !== "") {
-            const json = {
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
-                password: document.getElementById('mdp').value,
-            }
-
-            const validate = fetch("http://localhost:3001/api/article/user", {
-                method: "PUT",
-                headers,
-                body: JSON.stringify(json)
-            }).then(function(res) {
-                console.log(res);
-                    if (res.ok) {
-                        return res.json();
-                    }
-                    return res.json().then(json => {throw new Error(json.error)})
-                }).catch(function(err) {
-                    alert(err.message);
-            });
-
-            if(validate){
-                sessionStorage.setItem('token', validate.token);
-                console.log(validate.token);
-                window.location.reload();
-            }
-        } else {
-            event.preventDefault();
-            alert("Les entrées sont incorrectes, veuillez corriger le format de celles-ci !");
-        }
-    }
-    
     return (
         <div className="Compte">
             <div className="Compte-compte">
                 {
                     Data.map(data => {
                         return (
-                            <form className="formulaire" onSubmit={handleSubmit()}>
+                            <form className="formulaire" onSubmit={handleSubmit} key={data.id}>
                                 <label htmlFor="email">Email :</label>
                                 <input type="email" id="email" name="email" placeholder="contact@groupomania.fr" defaultValue={data.email} pattern="^[\w\-]+(\.[\w\-]+)*@[\w\-]+(\.[\w\-]+)*\.[\w\-]{2,4}$" required />
                                 <label htmlFor="mdp">Mot de passe :</label>

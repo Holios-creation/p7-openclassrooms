@@ -44,7 +44,7 @@ router.get('/user', auth, articleCtrl.getDataUser);
 /**
  * Définition de la route / pour une demande PUT
  */
- router.put('/user', auth, articleCtrl.modifyDataUser);
+ router.post('/user', auth, articleCtrl.modifyDataUser);
 
 /**
  * Renvoie du résultat de la requete

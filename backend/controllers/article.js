@@ -1,6 +1,7 @@
 /**
  * Importation du plugin pour le traitement des données
  */
+ const bcrypt = require('bcrypt');
 const fs = require('fs');
 const db = require('../database/dataBase');
 
@@ -60,23 +61,35 @@ exports.likeArticle = (req, res, next) => {
         if (error) {
             return res.status(400).json({ error });
         }
-        const usersLiked = result.userliked;
-        if (usersLiked.indexOf(req.auth.userId) == -1) {
-            usersLiked.push(req.auth.userId);
-            const userLikeObject = {
-                like: result.like + 1,
-                userliked: usersLiked,
-            };
-            Sauce.updateOne({ _id: req.params.id}, { ...userLikeObject, _id: req.params.id })
-                .then(() => res.status(200).json({ message: 'Le like à bien été pris en compte !' }))
-                .catch(error => res.status(400).json({ error }));
+        var userLiked = result[0].userliked;
+        if (userLiked.indexOf(req.auth.userId) == -1) {
+            userLiked = JSON.parse(userLiked);
+            userLiked.push(req.auth.userId);
+            var like = result[0].like + 1;
+            db.query('UPDATE groupomania.article SET `like` = ?, `userliked` = ? WHERE id = ?',
+            [like, JSON.stringify(userLiked), req.params.id],
+            (error, result) => {
+                if (error) {
+                    return res.status(400).json({ error });
+                } else {
+                    return res.status(200).json({ indice: '1' });
+                }
+            });
         } else {
-            return res.status(300).json({
-                message: 'Vous ne pouvez pas liker plusieurs fois !'
-            })
+            userLiked = JSON.parse(userLiked);
+            userLiked.splice(userLiked.indexOf(req.auth.userId), 1);
+            var like = result[0].like - 1;
+            db.query('UPDATE groupomania.article SET `like` = ?, `userliked` = ? WHERE id = ?',
+            [like, JSON.stringify(userLiked), req.params.id],
+            (error, result) => {
+                if (error) {
+                    return res.status(400).json({ error });
+                } else {
+                    return res.status(200).json({ indice: '-1' });
+                }
+            });
         }        
     })
-    .catch(error => res.status(404).json({ error }));
 };
 
 exports.addArticleComment = (req, res, next) => {
@@ -93,7 +106,7 @@ exports.addArticleComment = (req, res, next) => {
 }
 
 exports.getDataUser = (req, res, next) => {
-    db.query(`SELECT email, name FROM groupomania.utilisateur WHERE id = ?`,
+    db.query(`SELECT email, name, id FROM groupomania.utilisateur WHERE id = ?`,
     [req.auth.userId],
     (error, result) => {
         if (error) {
@@ -104,20 +117,38 @@ exports.getDataUser = (req, res, next) => {
 }
 
 exports.modifyDataUser = (req, res, next) => {
-    //hashage du mot de passe//
-    bcrypt
-    .hash(req.body.password, 10)
-    .then((hash) => {
-        db.query(`UPDATE groupomania.utilisateur SET email = ?, name = ?, password = ? WHERE id = ?`,
-        [req.body.email, req.body.name, hash, req.auth.userId],
-        (error, result) => {
-            if (error) {
-                return res.status(400).json({ error });
-            }
-            return res.status(201).json({
-                message: 'Les informations de l\'utilisateur ont été modifées !'
-            })
+    db.query(`SELECT * FROM groupomania.utilisateur WHERE email = '${req.body.email}' AND id != ${req.auth.userId}`,
+    (err, results) => {
+      //Contrôle que l'email ne soit pas utilisé//
+      if (results.length > 0) {
+        res.status(401).json({
+          message: 'L\'email est déjà utilisé.',
         });
-    })
-    .catch((error) => res.status(500).json({ error }));
+      } else {
+        console.log("--");
+        console.log(req.body.email)
+        console.log(req.body.name)
+        console.log(hash)
+        console.log(req.auth.userId)
+        console.log("--");
+        //hashage du mot de passe//
+        bcrypt
+          .hash(req.body.password, 10)
+          .then((hash) => {
+            //Add to BDD +injection sql
+            db.query(`UPDATE groupomania.utilisateur SET email = '${req.body.email}', name = '${req.body.name}', password = '${hash}' WHERE id = ${req.auth.userId}`,
+            (error, result) => {
+                if (error) {
+                    return res.status(400).json({ error });
+                }
+                console.log(result)
+                return res.status(201).json({
+                    message: 'Les informations de l\'utilisateur ont été modifées !'
+                })
+            });
+          })
+          .catch((error) => res.status(500).json({ error }));
+      }
+    }
+  );
 }

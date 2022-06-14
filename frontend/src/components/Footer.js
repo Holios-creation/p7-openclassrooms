@@ -13,16 +13,18 @@ class Register extends React.Component {
     }
     
     async handleSubmit(event) {
+        event.preventDefault();
         if(/^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)*\.[\w-]{2,4}$/.test(document.getElementById('email').value) === true && document.getElementById('email').value !== "" && /^[0"9a-zA-Z\sÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØŒŠþÙÚÛÜÝŸàáâãäåæçèéêëìíîïðñòóôõöøœšÞùúûüýÿ*-+\/=@#(!?:.,_$€§%^¨£)]*$/.test(document.getElementById('mdp').value) === true && document.getElementById('mdp').value !== "" && /^[0-9a-zA-Z\sÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØŒŠþÙÚÛÜÝŸàáâãäåæçèéêëìíîïðñòóôõöøœšÞùúûüýÿ]*$/.test(document.getElementById('name').value) === true && document.getElementById('name').value !== "" && document.getElementById('profilePicture').value !== "") {
             event.preventDefault();
             var formData = new FormData();
 
+            formData.append('enctype', 'form-data');
 		    formData.append('profilePicture', document.getElementById("profilePicture").files[0]);
             formData.append('password', document.getElementById("mdp").value)
             formData.append('email', document.getElementById("email").value)
             formData.append('name', document.getElementById("name").value)
 
-            console.log(formData)
+            console.log(formData.get("profilePicture"))
             const validate = await fetch("http://localhost:3001/api/auth/signup", {
                 method: "POST",
                 body: formData
@@ -50,7 +52,7 @@ class Register extends React.Component {
     render() {
         return (
             <div>
-                <form className="login" onSubmit={this.handleSubmit} enctype="multipart/form-data">
+                <form className="login" onSubmit={this.handleSubmit} enctype="form-data">
                     <label htmlFor="email">Email :</label>
                     <input type="email" id="email" name="email" placeholder="contact@groupomania.fr" pattern="^[\w\-]+(\.[\w\-]+)*@[\w\-]+(\.[\w\-]+)*\.[\w\-]{2,4}$" required />
                     <label htmlFor="mdp">Mot de passe :</label>
@@ -77,8 +79,8 @@ class Login extends React.Component {
     }
     
     async handleSubmit(event) {
+        event.preventDefault();
         if(/^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)*\.[\w-]{2,4}$/.test(document.getElementById('email').value) === true && document.getElementById('email').value !== "" && /^[0-9a-zA-Z\sÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØŒŠþÙÚÛÜÝŸàáâãäåæçèéêëìíîïðñòóôõöøœšÞùúûüýÿ*-+/=@#(!?:.,_$€§%^¨£)]*$/.test(document.getElementById('mdp').value) === true && document.getElementById('mdp').value !== "") {
-            event.preventDefault();
             const json = {
                 email: document.getElementById('email').value,
                 password: document.getElementById('mdp').value,
@@ -107,7 +109,6 @@ class Login extends React.Component {
                 window.location.reload();
             }
         } else {
-            event.preventDefault();
             alert("Les entrées sont incorrectes, veuillez corriger le format de celles-ci !");
         }
     }
