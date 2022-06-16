@@ -86,7 +86,7 @@
     justify-content: space-between;
 }
 
-.article .bottom .left, .article .bottom .right {
+.article .bottom .left {
     background:#F1F3F5;
     border-radius:10px;
     display:flex;
@@ -96,6 +96,24 @@
     height:calc(100% - 10px);
     margin-top:0;
 }
+
+.article .bottom .right {
+    display:flex;
+    flex-direction: row;
+    gap:10px;
+}
+
+.article .bottom .right .createComent, .article .bottom .right .numberComent{
+    background:#F1F3F5;
+    border-radius:10px;
+    display:flex;
+    flex-direction: row;
+    gap:10px;
+    padding:5px 10px;
+    height:calc(100% - 10px);
+    margin-top:0;
+}
+
 
 .article .bottom .left .numbersLikesArticle, .article .bottom .right .numbersCommentsArticle {
     margin:0;

@@ -12,7 +12,7 @@ export default function HandleComment(id) {
 
       try {
          fetch(`http://localhost:3001/api/article/comment/${id}`)
-         .then((response) => 
+         .then((response) =>
          {
             response.json()
             .then((data) => {

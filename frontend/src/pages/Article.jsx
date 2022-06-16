@@ -1,31 +1,35 @@
 import '../styles/Home.css';
 import React, { useState, useEffect } from 'react';
+import { useParams } from "react-router-dom"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faThumbsUp, faComments, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { faThumbsUp, faComments, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import HandleComment from '../functions/handleComment';
 import HandleLike from '../functions/changeLike';
 
 export default function Home() {
    const [surveyData, setSurveyData] = useState([])
+   const params = useParams();
+   console.log(params)
 
    useEffect(() => {
-      const fetchArticle = async () => {
-         try {
-            fetch("http://localhost:3001/api/article/")
-            .then((response) => 
-            {
-               response.json()
-               .then((data) => {
-                  console.log(data)
-                  setSurveyData(data);
-               })
-            })
-         } catch (err) {
-            console.log(err)
-         }
-      };
+        const fetchArticle = async () => {
+            try {
+                await fetch(`http://localhost:3001/api/article/article/${params.id}`)
+                .then((response) => 
+                {
+                    response.json()
+                    .then((data) => {
+                        console.log(data)
+                        setSurveyData(data);
+                        HandleComment(params.id);
+                    })
+                })
+            } catch (err) {
+                console.log(err)
+            }
+        };
       
-      fetchArticle()
+        fetchArticle()
 
    }, []);
     
@@ -61,17 +65,17 @@ export default function Home() {
                                     <p className="numbersLikesArticle">{article.like}</p>
                                  </div>
                                  <div className="right">
-                                    <a className="createComent" href={"/article/" + article.comment}>
+                                 <a className="createComent" href="/">
                                        <div className="backgroundHover">
-                                          <FontAwesomeIcon icon={faPaperPlane} className="icons"/>
+                                          <FontAwesomeIcon icon={faArrowLeft} className="icons"/>
                                        </div>
                                     </a>
                                     <div className="numberComent">
-                                       <div className="backgroundHover" onClick={() => HandleComment(article.id)}>
-                                          <FontAwesomeIcon icon={faComments} className="icons"/>
-                                       </div>
-                                       <p className="numbersCommentsArticle">{article.comment}</p>
-                                    </div> 
+                                        <div className="backgroundHover" onClick={() => HandleComment(article.id)}>
+                                        <FontAwesomeIcon icon={faComments} className="icons"/>
+                                        </div>
+                                        <p className="numbersCommentsArticle">{article.comment}</p>
+                                    </div>
                                  </div>
                               </div>
                               <div className="comments"></div>

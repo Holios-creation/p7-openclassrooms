@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './index.css';
 import Home from './pages/Home';
 import Add from './pages/Add';
+import Article from './pages/Article';
 import Compte from './pages/Compte';
 import Error from './error/index';
 import Header from './components/Header';
@@ -14,12 +15,19 @@ ReactDOM.render(
     <BrowserRouter>
       <Header />
       <Routes>
-        <Route exact path="/" element={<Home />} />
-        <Route path="/add" element={<div><Add /><Home /></div>} />
-        <Route path="/compte" element={<Compte />} />
+        <Route path="/">
+          <Route exact path="" element={<Home />} />
+          <Route path="article/:id" element={<Article />} />
+          <Route path="add" element={<div><Add /><Home /></div>} />
+          <Route path="compte" element={<Compte />} />
+          <Route path="*" element={<Error />} />
+        </Route>
         <Route path="*" element={<Error />} />
       </Routes>
-      <Footer />
+      <Routes>
+        <Route path="/article/:id" element={<Footer />} />
+        <Route path="*" element={<Footer />} />
+      </Routes>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')

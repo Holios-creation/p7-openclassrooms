@@ -19,6 +19,18 @@ exports.getArticles = (req, res, next) => {
     });
 };
 
+exports.getOneArticle = (req, res, next) => {
+    db.query('SELECT groupomania.article.titre, groupomania.article.date, groupomania.article.image, groupomania.article.like, groupomania.article.id, groupomania.utilisateur.name, groupomania.utilisateur.profilePicture, COUNT(groupomania.utilisateur.id) as comment FROM groupomania.article LEFT JOIN groupomania.utilisateur ON groupomania.article.idCreator = groupomania.utilisateur.id INNER JOIN groupomania.comment ON groupomania.article.id = groupomania.comment.idArticle WHERE groupomania.article.id = ? AND groupomania.article.idCreator = groupomania.utilisateur.id AND groupomania.article.id = groupomania.comment.idArticle GROUP BY groupomania.article.id', 
+    [req.params.id],
+    (error, results) => {
+        console.log(results);
+        if (error) {
+            return res.status(400).json({ error });
+        }
+        return res.status(200).json(results);
+    });
+};
+
 /**
  * Fonction de traitement de la requete d'affichage du nombre de commentaires d'un article en fonction de son Id
  */
@@ -93,8 +105,9 @@ exports.likeArticle = (req, res, next) => {
 };
 
 exports.addArticleComment = (req, res, next) => {
+    console.log(req.body.message);
     db.query(`INSERT INTO groupomania.comment (idArticle, date, text) VALUES ( ?, NOW(), ?)`,
-    [req.body.idArticle, req.body.text],
+    [req.params.id, req.body.message],
     (error, result) => {
         if (error) {
             return res.status(400).json({ error });

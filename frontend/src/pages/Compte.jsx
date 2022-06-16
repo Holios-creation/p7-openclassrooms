@@ -40,6 +40,12 @@ export default function Compte() {
 
     }
 
+    function logoutUser() {
+        console.log("logout");
+        sessionStorage.removeItem('token');
+        window.location.reload();
+    }
+
     return (
         <div className="Compte">
             <div className="Compte-compte">
@@ -58,6 +64,9 @@ export default function Compte() {
                         )
                     })
                 }
+                <div className="logout" onClick={() => logoutUser()}>
+                    <div className="logoutButton">Déconnexion</div>
+                </div>
             </div>
         </div>
     )

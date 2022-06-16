@@ -1,9 +1,9 @@
 import '../styles/Footer.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faImage, faArrowCircleRight, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faArrowCircleRight, faPlus } from '@fortawesome/free-solid-svg-icons';
 import auth from '../functions/auth';
 import React from 'react';
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom';
 
 class Register extends React.Component {
     constructor(props) {
@@ -132,36 +132,78 @@ class Login extends React.Component {
 }
 
 class Content extends React.Component {
-    render() {
-        let searchParams = new URLSearchParams(window.location.search);
-        if (searchParams.has('id') === true && searchParams.get('id') !== "") {
-            return (
-                <form className="message">
-                    <input type="text" id="message" placeholder="Votre message..." required />
-                    <div className="image">
-                        <FontAwesomeIcon icon={faImage} className="icons"/>
-                    </div>
-                    <button type="submit" className="submit">
-                        <FontAwesomeIcon icon={faArrowCircleRight} className="icons"/>
-                    </button>
-                </form>
-            );
+    constructor(props) {
+        super(props);
+
+        this.sendMessage = this.sendMessage.bind(this);
+    }
+    
+    async sendMessage(event) {
+        event.preventDefault();
+
+        const token = sessionStorage.getItem('token');
+
+        const headers = new Headers();
+        headers.append('Authorization', `Bearer ${token}`);
+
+        const params = this.props.params;
+
+        if(document.getElementById('message').value !== "") {
+            const json = {
+                message: document.getElementById('message').value
+            }
+
+            const validate = await fetch(`http://localhost:3001/api/article/comment/${params.id}`, {
+                method: "POST",
+                headers,
+                body: json
+            }).then(function(res) {
+                console.log(res);
+                    if (res.ok) {
+                        return res.json();
+                    }
+                    return res.json().then(json => {throw new Error(json.error)})
+                }).catch(function(err) {
+                    alert(err.message);
+                });
+
+            if(validate){
+                window.location.reload();
+            }
         } else {
-            return (
-                <div className="items">
-                    <Link to="/" className="buttons">
-                        <p>Découvrir les différents articles</p>
-                    </Link>
-                    <Link to="/add" className="add">
-                        <FontAwesomeIcon icon={faPlus} className="icons"/>
-                    </Link>
-                </div>
-            );
+            alert("Les entrées sont incorrectes, veuillez corriger le format de celles-ci !");
         }
+    }
+
+    render() {
+        return (
+            <form className="message" onSubmit={this.sendMessage}>
+                <input type="text" id="message" name="message" placeholder="Votre message..." required />
+                <button type="submit" className="submit">
+                    <FontAwesomeIcon icon={faArrowCircleRight} className="icons"/>
+                </button>
+            </form>
+        );
     }
 }
 
-function Footer() {
+class Accueil extends React.Component {
+    render() {
+        return (
+            <div className="items">
+                <Link to="/" className="buttons">
+                    <p>Découvrir les différents articles</p>
+                </Link>
+                <Link to="/add" className="add">
+                    <FontAwesomeIcon icon={faPlus} className="icons"/>
+                </Link>
+            </div>
+        );
+    }
+}
+
+export default function Footer() {
+    const params = useParams();
     if (auth() === false) {
         let searchParams = new URLSearchParams(window.location.search);
         if (searchParams.has('register') === true && searchParams.get('register') !== "") {
@@ -182,14 +224,22 @@ function Footer() {
             )
         }
     } else {
-        return (
-            <div className="Footer">
-                <footer className="Footer-footer">
-                    <Content />
-                </footer>
-            </div>
-        );
+        if(params.id === undefined) {
+            return (
+                <div className="Footer">
+                    <footer className="Footer-footer">
+                        <Accueil />
+                    </footer>
+                </div>
+            );
+        } else {
+            return (
+                <div className="Footer">
+                    <footer className="Footer-footer">
+                        <Content params={params}/>
+                    </footer>
+                </div>
+            );
+        }
     }
 }
-
-export default Footer;

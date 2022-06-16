@@ -19,6 +19,11 @@ router.get('/', articleCtrl.getArticles);
 /**
  * Définition de la route / pour une demande GET
  */
+ router.get('/article/:id', articleCtrl.getOneArticle);
+
+/**
+ * Définition de la route / pour une demande GET
+ */
  router.get('/comment/:id', articleCtrl.getArticleComment);
 
 /**
