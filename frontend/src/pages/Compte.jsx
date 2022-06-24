@@ -2,6 +2,7 @@ import '../styles/Compte.css';
 import React, { useState, useEffect } from 'react';
 import auth from '../functions/auth';
 import handleSubmit from '../functions/compteData';
+import DeleteUser from '../functions/deleteUser';
 import { Navigate } from "react-router-dom";
 
 export default function Compte() {
@@ -19,7 +20,7 @@ export default function Compte() {
                 headers
             };
             
-            fetch("http://localhost:3001/api/article/user", options)
+            fetch("http://localhost:3001/api/auth/user", options)
             .then((response) =>
                 {
                     response.json()
@@ -66,6 +67,9 @@ export default function Compte() {
                 }
                 <div className="logout" onClick={() => logoutUser()}>
                     <div className="logoutButton">Déconnexion</div>
+                </div>
+                <div className="delete" onClick={() => DeleteUser()}>
+                    <div className="deleteButton">Suppression du compte</div>
                 </div>
             </div>
         </div>

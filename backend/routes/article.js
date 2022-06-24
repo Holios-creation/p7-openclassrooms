@@ -12,44 +12,34 @@ const auth = require('../middleware/auth');
 const multer = require('../middleware/multer-config');
 
 /**
- * Définition de la route / pour une demande GET
+ * Définition de la route / pour une demande GET - ok
  */
 router.get('/', articleCtrl.getArticles);
 
 /**
- * Définition de la route / pour une demande GET
+ * Définition de la route / pour une demande GET - ok
  */
  router.get('/article/:id', articleCtrl.getOneArticle);
 
 /**
- * Définition de la route / pour une demande GET
+ * Définition de la route / pour une demande GET - ok
  */
  router.get('/comment/:id', articleCtrl.getArticleComment);
 
 /**
- * Définition de la route / pour une demande POST
+ * Définition de la route / pour une demande POST - x
  */
 router.post('/', auth, multer, articleCtrl.addArticle);
 
 /**
- * Définition de la route /:id/like pour une demande POST
+ * Définition de la route /:id/like pour une demande POST - ok
  */
 router.post('/like/:id', auth, articleCtrl.likeArticle);
 
 /**
- * Définition de la route / pour une demande POST
+ * Définition de la route / pour une demande POST - X
  */
 router.post('/comment/:id', auth, articleCtrl.addArticleComment);
-
-/**
- * Définition de la route / pour une demande GET
- */
-router.get('/user', auth, articleCtrl.getDataUser);
-
-/**
- * Définition de la route / pour une demande PUT
- */
- router.post('/user', auth, articleCtrl.modifyDataUser);
 
 /**
  * Renvoie du résultat de la requete

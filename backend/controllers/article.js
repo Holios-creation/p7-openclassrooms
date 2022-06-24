@@ -1,7 +1,7 @@
 /**
  * Importation du plugin pour le traitement des données
  */
- const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt');
 const fs = require('fs');
 const db = require('../database/dataBase');
 
@@ -19,6 +19,9 @@ exports.getArticles = (req, res, next) => {
     });
 };
 
+/**
+ * Fonction de traitement de la requete d'affichage d'un article
+ */
 exports.getOneArticle = (req, res, next) => {
     db.query('SELECT groupomania.article.titre, groupomania.article.date, groupomania.article.image, groupomania.article.like, groupomania.article.id, groupomania.utilisateur.name, groupomania.utilisateur.profilePicture, COUNT(groupomania.utilisateur.id) as comment FROM groupomania.article LEFT JOIN groupomania.utilisateur ON groupomania.article.idCreator = groupomania.utilisateur.id INNER JOIN groupomania.comment ON groupomania.article.id = groupomania.comment.idArticle WHERE groupomania.article.id = ? AND groupomania.article.idCreator = groupomania.utilisateur.id AND groupomania.article.id = groupomania.comment.idArticle GROUP BY groupomania.article.id', 
     [req.params.id],
@@ -32,10 +35,10 @@ exports.getOneArticle = (req, res, next) => {
 };
 
 /**
- * Fonction de traitement de la requete d'affichage du nombre de commentaires d'un article en fonction de son Id
+ * Fonction de traitement de la requete d'affichage des commentaires d'un article en fonction de son Id
  */
 exports.getArticleComment = (req, res, next) => {
-    db.query('SELECT * FROM groupomania.comment WHERE idArticle = ?',
+    db.query('SELECT * FROM groupomania.comment WHERE idArticle = ? AND text != NULL',
     [req.params.id],
      (error, result) => {
         if (error) {
@@ -50,16 +53,31 @@ exports.getArticleComment = (req, res, next) => {
  * Fonction de traitement de la requete d'ajout d'un article
  */
 exports.addArticle = (req, res, next) => {
-    const imgUrl = 'file' in req ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null;
-    db.query(`INSERT INTO groupomania.article (titre, date, image, idCreator) VALUES ( ?, NOW(), ?, ?)`,
-    [req.body.title, imgUrl, req.body.creatorID],
-    (error, result) => {
+    console.log("et hop");
+    console.log(req.body);
+    console.log(req.file);
+    db.query(`INSERT INTO groupomania.article (titre, date, image, idCreator) VALUES ( '${req.body.titre}', NOW(), '${req.protocol}://${req.get('host')}/images/${req.file.filename}', '${req.auth.userId}')`,
+    (error, results) => {
         if (error) {
             return res.status(400).json({ error });
         }
-        return res.status(201).json({
-            message: 'Votre post à été publié !'
-        })
+        db.query(`SELECT id FROM groupomania.article WHERE idCreator = ${req.auth.userId} ORDER BY id DESC`,
+        (error, result) => {
+            if (error) {
+                return res.status(400).json({ error });
+            }
+            console.log(result[0].id);
+            db.query(`INSERT INTO groupomania.comment (idArticle, date, text, idCreator) VALUES ( ?, NOW(), NULL, ?)`,
+            [result[0].id, req.auth.userId],
+            (error, resultat) => {
+                if (error) {
+                    return res.status(400).json({ error });
+                }
+                return res.status(201).json({
+                    message: 'Article Ajouté !'
+                })
+            });
+        });
     });
 };
 
@@ -104,10 +122,14 @@ exports.likeArticle = (req, res, next) => {
     })
 };
 
+/**
+ * Fonction de traitement de la requete d'ajout d'un commentaire
+ */
 exports.addArticleComment = (req, res, next) => {
-    console.log(req.body.message);
-    db.query(`INSERT INTO groupomania.comment (idArticle, date, text) VALUES ( ?, NOW(), ?)`,
-    [req.params.id, req.body.message],
+    console.log("ca c'est du test");
+    console.log(req.body);
+    db.query(`INSERT INTO groupomania.comment (idArticle, date, text, idCreator) VALUES ( ?, NOW(), ?, ?)`,
+    [req.params.id, req.body.message, req.auth.userId],
     (error, result) => {
         if (error) {
             return res.status(400).json({ error });
@@ -116,52 +138,4 @@ exports.addArticleComment = (req, res, next) => {
             message: 'Votre commentaire à été publié !'
         })
     });
-}
-
-exports.getDataUser = (req, res, next) => {
-    db.query(`SELECT email, name, id FROM groupomania.utilisateur WHERE id = ?`,
-    [req.auth.userId],
-    (error, result) => {
-        if (error) {
-            return res.status(400).json({ error });
-        }
-        return res.status(200).json(result);
-    });
-}
-
-exports.modifyDataUser = (req, res, next) => {
-    db.query(`SELECT * FROM groupomania.utilisateur WHERE email = '${req.body.email}' AND id != ${req.auth.userId}`,
-    (err, results) => {
-      //Contrôle que l'email ne soit pas utilisé//
-      if (results.length > 0) {
-        res.status(401).json({
-          message: 'L\'email est déjà utilisé.',
-        });
-      } else {
-        console.log("--");
-        console.log(req.body.email)
-        console.log(req.body.name)
-        console.log(hash)
-        console.log(req.auth.userId)
-        console.log("--");
-        //hashage du mot de passe//
-        bcrypt
-          .hash(req.body.password, 10)
-          .then((hash) => {
-            //Add to BDD +injection sql
-            db.query(`UPDATE groupomania.utilisateur SET email = '${req.body.email}', name = '${req.body.name}', password = '${hash}' WHERE id = ${req.auth.userId}`,
-            (error, result) => {
-                if (error) {
-                    return res.status(400).json({ error });
-                }
-                console.log(result)
-                return res.status(201).json({
-                    message: 'Les informations de l\'utilisateur ont été modifées !'
-                })
-            });
-          })
-          .catch((error) => res.status(500).json({ error }));
-      }
-    }
-  );
 }

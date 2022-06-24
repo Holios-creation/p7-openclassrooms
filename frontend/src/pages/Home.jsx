@@ -61,7 +61,7 @@ export default function Home() {
                                     <p className="numbersLikesArticle">{article.like}</p>
                                  </div>
                                  <div className="right">
-                                    <a className="createComent" href={"/article/" + article.comment}>
+                                    <a className="createComent" href={"/article/" + article.id}>
                                        <div className="backgroundHover">
                                           <FontAwesomeIcon icon={faPaperPlane} className="icons"/>
                                        </div>

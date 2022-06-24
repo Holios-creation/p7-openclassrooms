@@ -14,12 +14,12 @@ class Register extends React.Component {
     
     async handleSubmit(event) {
         event.preventDefault();
-        if(/^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)*\.[\w-]{2,4}$/.test(document.getElementById('email').value) === true && document.getElementById('email').value !== "" && /^[0"9a-zA-Z\sÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØŒŠþÙÚÛÜÝŸàáâãäåæçèéêëìíîïðñòóôõöøœšÞùúûüýÿ*-+\/=@#(!?:.,_$€§%^¨£)]*$/.test(document.getElementById('mdp').value) === true && document.getElementById('mdp').value !== "" && /^[0-9a-zA-Z\sÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØŒŠþÙÚÛÜÝŸàáâãäåæçèéêëìíîïðñòóôõöøœšÞùúûüýÿ]*$/.test(document.getElementById('name').value) === true && document.getElementById('name').value !== "" && document.getElementById('profilePicture').value !== "") {
-            event.preventDefault();
-            var formData = new FormData();
+
+        if(/^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)*\.[\w-]{2,4}$/.test(document.getElementById('email').value) === true && document.getElementById('email').value !== "" && /^[0"9a-zA-Z\sÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØŒŠþÙÚÛÜÝŸàáâãäåæçèéêëìíîïðñòóôõöøœšÞùúûüýÿ*-+\/=@#(!?:.,_$€§%^¨£)]*$/.test(document.getElementById('mdp').value) === true && document.getElementById('mdp').value !== "" && /^[0-9a-zA-Z\sÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØŒŠþÙÚÛÜÝŸàáâãäåæçèéêëìíîïðñòóôõöøœšÞùúûüýÿ]*$/.test(document.getElementById('name').value) === true && document.getElementById('name').value !== "" && document.getElementById('image').value !== "") {
+            const formData = new FormData();
 
             formData.append('enctype', 'form-data');
-		    formData.append('profilePicture', document.getElementById("profilePicture").files[0]);
+		    formData.append('image', document.getElementById("image").files[0]);
             formData.append('password', document.getElementById("mdp").value)
             formData.append('email', document.getElementById("email").value)
             formData.append('name', document.getElementById("name").value)
@@ -44,7 +44,6 @@ class Register extends React.Component {
                 window.location.reload();
             }
         } else {
-            event.preventDefault();
             alert("Les entrées sont incorrectes, veuillez corriger le format de celles-ci !");
         }
     }
@@ -59,8 +58,8 @@ class Register extends React.Component {
                     <input type="text" id="mdp" name="mdp" placeholder="********" pattern="^[0-9a-zA-Z\sÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØŒŠþÙÚÛÜÝŸàáâãäåæçèéêëìíîïðñòóôõöøœšÞùúûüýÿ*-+/=@#(!?:.,_$€§%^¨£)]*$" required />
                     <label htmlFor="name">Prénom et nom :</label>
                     <input type="text" id="name" name="name" placeholder="Jack DUPONT" pattern="^[0-9a-zA-Z\sÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØŒŠþÙÚÛÜÝŸàáâãäåæçèéêëìíîïðñòóôõöøœšÞùúûüýÿ]*$" required />
-                    <label htmlFor="profilePicture">Photo de profil :</label>
-                    <input type="file" id="profilePicture" name="profilePicture" accept="image/png, image/jpeg, image/jpg, image/gif" required />
+                    <label htmlFor="image">Photo de profil :</label>
+                    <input type="file" id="image" name="image" accept="image/png, image/jpeg, image/jpg, image/gif" required />
                     <input type="submit" value="S'inscrire !" />
                 </form>
                 <a href="/" className="redirectionLink">
@@ -141,22 +140,23 @@ class Content extends React.Component {
     async sendMessage(event) {
         event.preventDefault();
 
-        const token = sessionStorage.getItem('token');
-
-        const headers = new Headers();
-        headers.append('Authorization', `Bearer ${token}`);
-
-        const params = this.props.params;
-
         if(document.getElementById('message').value !== "") {
-            const json = {
-                message: document.getElementById('message').value
-            }
+
+            const token = sessionStorage.getItem('token');
+
+            const myheaders = new Headers();
+            myheaders.append('Authorization', `Bearer ${token}`);
+
+            const params = this.props.params;
+
+            const formData = new FormData();
+            formData.append('enctype', 'form-data');
+            formData.append('message', document.getElementById('message').value);
 
             const validate = await fetch(`http://localhost:3001/api/article/comment/${params.id}`, {
                 method: "POST",
-                headers,
-                body: json
+                body: formData,
+                headers: myheaders
             }).then(function(res) {
                 console.log(res);
                     if (res.ok) {
@@ -165,11 +165,12 @@ class Content extends React.Component {
                     return res.json().then(json => {throw new Error(json.error)})
                 }).catch(function(err) {
                     alert(err.message);
-                });
+            });
 
             if(validate){
                 window.location.reload();
             }
+            
         } else {
             alert("Les entrées sont incorrectes, veuillez corriger le format de celles-ci !");
         }

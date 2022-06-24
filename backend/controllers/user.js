@@ -9,6 +9,7 @@ const db = require('../database/dataBase');
  * Fonction de traitement de la requete d'inscription
  */
 exports.signupUser = (req, res, next) => {
+  console.log(req.body);
   db.query(`SELECT * FROM groupomania.utilisateur WHERE email = ?`,
     [req.body.email],
     (err, results) => {
@@ -28,10 +29,20 @@ exports.signupUser = (req, res, next) => {
               (err, fields) => {
                 if (err) {
                   return res.status(400).json(err);
-                }
-                return res.status(201).json({
-                  message: 'Votre compte a bien été crée !',
-                });
+                } else {
+                  db.query('SELECT * FROM groupomania.utilisateur WHERE email = ?',
+                  [req.body.email],
+                  (err, resultats) => {
+                    return res.status(200).json({
+                      userId: resultats[0].id,
+                      userName: resultats[0].name,
+                      userProfilePicture: resultats[0].profilePicture,
+                      token: jwt.sign({ userId: resultats[0].id }, 'RANDOM_TOKEN_SECRET_FOR_PROJECT_SEVEN_OF_THE_OPENCLASSROOMS_WEB_DEVELOPER_TRAINING', {
+                        expiresIn: '24h',
+                      }),
+                    });
+                  }
+                )}
               }
             );
           })
@@ -73,3 +84,106 @@ exports.loginUser = (req, res, next) => {
     }
   );
 };
+
+/**
+* Fonction de traitement de la requete de suppression d'un compte
+*/
+exports.deleteUser = (req, res, next) => {
+ db.query('DELETE FROM groupomania.comment WHERE idCreator = ?',
+   [req.auth.userId],
+   (err, results) => {
+    if (err) {
+      return res.status(400).json({ err });
+    }
+   }
+ );
+ db.query('SELECT * FROM groupomania.article WHERE idCreator = ?',
+   [req.auth.userId],
+   (err, results) => {
+    results.map(result => {
+      db.query('DELETE FROM groupomania.comment WHERE idArticle = ?',
+        [result.id],
+        (err, results) => {
+          if (err) {
+            return res.status(400).json({ err });
+          }
+        }
+      );
+      db.query('DELETE FROM groupomania.article WHERE idCreator = ?',
+        [req.auth.userId],
+        (err, results) => {
+          if (err) {
+            return res.status(400).json({ err });
+          }
+        }
+      );
+    })
+   }
+ );
+ db.query('DELETE FROM groupomania.utilisateur WHERE id = ?',
+  [req.auth.userId],
+  (err, results) => {
+    if (err) {
+      return res.status(400).json({ err });
+    }
+  }
+  );
+  return res.status(201).json({
+    message: 'Toutes les informations ont bien été supprimées !'
+})
+};
+
+/**
+* Fonction de traitement de la requete d'obtention des données d'un utilisateur
+*/
+exports.getDataUser = (req, res, next) => {
+  db.query(`SELECT email, name, id FROM groupomania.utilisateur WHERE id = ?`,
+  [req.auth.userId],
+  (error, result) => {
+      if (error) {
+          return res.status(400).json({ error });
+      }
+      return res.status(200).json(result);
+  });
+}
+
+/**
+* Fonction de traitement de la requete de modification des données d'un utilisateur
+*/
+exports.modifyDataUser = (req, res, next) => {
+  console.log(req.body);
+  db.query(`SELECT * FROM groupomania.utilisateur WHERE email = '${req.body.email}' AND id != ${req.auth.userId}`,
+  (err, results) => {
+    //Contrôle que l'email ne soit pas utilisé//
+    if (results.length > 0) {
+      res.status(401).json({
+        message: 'L\'email est déjà utilisé.',
+      });
+    } else {
+      console.log("--");
+      console.log(req.body.email)
+      console.log(req.body.name)
+      console.log(hash)
+      console.log(req.auth.userId)
+      console.log("--");
+      //hashage du mot de passe//
+      bcrypt
+        .hash(req.body.password, 10)
+        .then((hash) => {
+          //Add to BDD +injection sql
+          db.query(`UPDATE groupomania.utilisateur SET email = '${req.body.email}', name = '${req.body.name}', password = '${hash}' WHERE id = ${req.auth.userId}`,
+          (error, result) => {
+              if (error) {
+                  return res.status(400).json({ error });
+              }
+              console.log(result)
+              return res.status(201).json({
+                  message: 'Les informations de l\'utilisateur ont été modifées !'
+              })
+          });
+        })
+        .catch((error) => res.status(500).json({ error }));
+    }
+  }
+);
+}
