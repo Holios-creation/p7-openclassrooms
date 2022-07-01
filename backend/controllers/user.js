@@ -9,7 +9,6 @@ const db = require('../database/dataBase');
  * Fonction de traitement de la requete d'inscription
  */
 exports.signupUser = (req, res, next) => {
-  console.log(req.body);
   db.query(`SELECT * FROM groupomania.utilisateur WHERE email = ?`,
     [req.body.email],
     (err, results) => {
@@ -19,7 +18,6 @@ exports.signupUser = (req, res, next) => {
           message: 'L\'email est déjà utilisé.',
         });
       } else {
-        console.log("ok");
         //hashage du mot de passe//
         bcrypt
           .hash(req.body.password, 10)
@@ -59,7 +57,6 @@ exports.loginUser = (req, res, next) => {
   db.query('SELECT * FROM groupomania.utilisateur WHERE email = ?',
     [req.body.email],
     (err, results) => {
-      console.log(req.body, results);
       //si l'utilisateur existe dans la base de donnée//
       if (results.length > 0) {
         //vérification du mot de passe de l'utilisateur//
@@ -151,7 +148,6 @@ exports.getDataUser = (req, res, next) => {
 * Fonction de traitement de la requete de modification des données d'un utilisateur
 */
 exports.modifyDataUser = (req, res, next) => {
-  console.log(req.body);
   db.query(`SELECT * FROM groupomania.utilisateur WHERE email = '${req.body.email}' AND id != ${req.auth.userId}`,
   (err, results) => {
     //Contrôle que l'email ne soit pas utilisé//
@@ -160,12 +156,6 @@ exports.modifyDataUser = (req, res, next) => {
         message: 'L\'email est déjà utilisé.',
       });
     } else {
-      console.log("--");
-      console.log(req.body.email)
-      console.log(req.body.name)
-      console.log(hash)
-      console.log(req.auth.userId)
-      console.log("--");
       //hashage du mot de passe//
       bcrypt
         .hash(req.body.password, 10)
@@ -176,7 +166,6 @@ exports.modifyDataUser = (req, res, next) => {
               if (error) {
                   return res.status(400).json({ error });
               }
-              console.log(result)
               return res.status(201).json({
                   message: 'Les informations de l\'utilisateur ont été modifées !'
               })
@@ -186,4 +175,18 @@ exports.modifyDataUser = (req, res, next) => {
     }
   }
 );
+}
+
+/**
+* Fonction de traitement de la requete de vérification du grade d'un utilisateur
+*/
+exports.VerifyUser = (req, res, next) => {
+  db.query(`SELECT grade FROM groupomania.utilisateur WHERE id = ?`,
+  [req.auth.userId],
+  (error, result) => {
+      if (error) {
+          return res.status(400).json({ error });
+      }
+      return res.status(200).json(result);
+  });
 }

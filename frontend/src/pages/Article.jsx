@@ -47,10 +47,12 @@ export default function Home() {
                         <div className="article" key={article.id}>
                            <article className="articleArticle" id={article.id}>
                               <div className="top">
-                                 <img className="pictureAuthorProfile" src={article.profilePicture} alt="Profil de l'utilisateur" />
-                                 <div className="texts">
-                                       <p className="nameAuthorProfile">{article.name}</p>
-                                       <p className="informationsArticle">{date}</p>
+                                 <div className="user">
+                                    <img className="pictureAuthorProfile" src={article.profilePicture} alt="Profil de l'utilisateur" />
+                                    <div className="texts">
+                                          <p className="nameAuthorProfile">{article.name}</p>
+                                          <p className="informationsArticle">{date}</p>
+                                    </div>
                                  </div>
                               </div>
                               <div className="content">
@@ -74,7 +76,7 @@ export default function Home() {
                                         <div className="backgroundHover" onClick={() => HandleComment(article.id)}>
                                         <FontAwesomeIcon icon={faComments} className="icons"/>
                                         </div>
-                                        <p className="numbersCommentsArticle">{article.comment}</p>
+                                        <p className="numbersCommentsArticle">{article.comment - 1}</p>
                                     </div>
                                  </div>
                               </div>

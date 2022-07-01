@@ -50,7 +50,7 @@ class Register extends React.Component {
 
     render() {
         return (
-            <div>
+            <div className="center">
                 <form className="login" onSubmit={this.handleSubmit} enctype="form-data">
                     <label htmlFor="email">Email :</label>
                     <input type="email" id="email" name="email" placeholder="contact@groupomania.fr" pattern="^[\w\-]+(\.[\w\-]+)*@[\w\-]+(\.[\w\-]+)*\.[\w\-]{2,4}$" required />
@@ -114,7 +114,7 @@ class Login extends React.Component {
 
     render() {
         return (
-            <div>
+            <div className="center">
                 <form className="login" onSubmit={this.handleSubmit}>
                     <label htmlFor="email">Email :</label>
                     <input type="email" id="email" name="email" placeholder="contact@groupomania.fr" pattern="^[\w\-]+(\.[\w\-]+)*@[\w\-]+(\.[\w\-]+)*\.[\w\-]{2,4}$" required />
@@ -145,18 +145,19 @@ class Content extends React.Component {
             const token = sessionStorage.getItem('token');
 
             const myheaders = new Headers();
+            myheaders.append('Content-Type', 'application/json');
             myheaders.append('Authorization', `Bearer ${token}`);
 
             const params = this.props.params;
 
-            const formData = new FormData();
-            formData.append('enctype', 'form-data');
-            formData.append('message', document.getElementById('message').value);
+            const json = {
+                message: document.getElementById('message').value
+            }
 
             const validate = await fetch(`http://localhost:3001/api/article/comment/${params.id}`, {
                 method: "POST",
-                body: formData,
-                headers: myheaders
+                headers: myheaders,
+                body: JSON.stringify(json)
             }).then(function(res) {
                 console.log(res);
                     if (res.ok) {

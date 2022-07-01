@@ -5,6 +5,7 @@ import './index.css';
 import Home from './pages/Home';
 import Add from './pages/Add';
 import Article from './pages/Article';
+import Admin from './pages/Administration';
 import Compte from './pages/Compte';
 import Error from './error/index';
 import Header from './components/Header';
@@ -20,6 +21,7 @@ ReactDOM.render(
           <Route path="article/:id" element={<Article />} />
           <Route path="add" element={<div><Add /><Home /></div>} />
           <Route path="compte" element={<Compte />} />
+          <Route path="admin" element={<Admin />} />
           <Route path="*" element={<Error />} />
         </Route>
         <Route path="*" element={<Error />} />

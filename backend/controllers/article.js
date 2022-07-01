@@ -11,7 +11,6 @@ const db = require('../database/dataBase');
 exports.getArticles = (req, res, next) => {
     db.query('SELECT groupomania.article.titre, groupomania.article.date, groupomania.article.image, groupomania.article.like, groupomania.article.id, groupomania.utilisateur.name, groupomania.utilisateur.profilePicture, COUNT(groupomania.utilisateur.id) as comment FROM groupomania.article LEFT JOIN groupomania.utilisateur ON groupomania.article.idCreator = groupomania.utilisateur.id INNER JOIN groupomania.comment ON groupomania.article.id = groupomania.comment.idArticle WHERE groupomania.article.idCreator = groupomania.utilisateur.id AND groupomania.article.id = groupomania.comment.idArticle GROUP BY groupomania.article.id ORDER BY groupomania.article.id DESC', 
     (error, results) => {
-        console.log(results);
         if (error) {
             return res.status(400).json({ error });
         }
@@ -26,7 +25,6 @@ exports.getOneArticle = (req, res, next) => {
     db.query('SELECT groupomania.article.titre, groupomania.article.date, groupomania.article.image, groupomania.article.like, groupomania.article.id, groupomania.utilisateur.name, groupomania.utilisateur.profilePicture, COUNT(groupomania.utilisateur.id) as comment FROM groupomania.article LEFT JOIN groupomania.utilisateur ON groupomania.article.idCreator = groupomania.utilisateur.id INNER JOIN groupomania.comment ON groupomania.article.id = groupomania.comment.idArticle WHERE groupomania.article.id = ? AND groupomania.article.idCreator = groupomania.utilisateur.id AND groupomania.article.id = groupomania.comment.idArticle GROUP BY groupomania.article.id', 
     [req.params.id],
     (error, results) => {
-        console.log(results);
         if (error) {
             return res.status(400).json({ error });
         }
@@ -38,13 +36,12 @@ exports.getOneArticle = (req, res, next) => {
  * Fonction de traitement de la requete d'affichage des commentaires d'un article en fonction de son Id
  */
 exports.getArticleComment = (req, res, next) => {
-    db.query('SELECT * FROM groupomania.comment WHERE idArticle = ? AND text != NULL',
+    db.query('SELECT * FROM groupomania.comment WHERE idArticle = ?',
     [req.params.id],
      (error, result) => {
         if (error) {
             return res.status(400).json({ error });
         }
-        console.log(result)
         return res.status(200).json(result);
     });
 };
@@ -53,9 +50,6 @@ exports.getArticleComment = (req, res, next) => {
  * Fonction de traitement de la requete d'ajout d'un article
  */
 exports.addArticle = (req, res, next) => {
-    console.log("et hop");
-    console.log(req.body);
-    console.log(req.file);
     db.query(`INSERT INTO groupomania.article (titre, date, image, idCreator) VALUES ( '${req.body.titre}', NOW(), '${req.protocol}://${req.get('host')}/images/${req.file.filename}', '${req.auth.userId}')`,
     (error, results) => {
         if (error) {
@@ -66,7 +60,6 @@ exports.addArticle = (req, res, next) => {
             if (error) {
                 return res.status(400).json({ error });
             }
-            console.log(result[0].id);
             db.query(`INSERT INTO groupomania.comment (idArticle, date, text, idCreator) VALUES ( ?, NOW(), NULL, ?)`,
             [result[0].id, req.auth.userId],
             (error, resultat) => {
@@ -126,8 +119,6 @@ exports.likeArticle = (req, res, next) => {
  * Fonction de traitement de la requete d'ajout d'un commentaire
  */
 exports.addArticleComment = (req, res, next) => {
-    console.log("ca c'est du test");
-    console.log(req.body);
     db.query(`INSERT INTO groupomania.comment (idArticle, date, text, idCreator) VALUES ( ?, NOW(), ?, ?)`,
     [req.params.id, req.body.message, req.auth.userId],
     (error, result) => {
@@ -139,3 +130,38 @@ exports.addArticleComment = (req, res, next) => {
         })
     });
 }
+
+/**
+ * Fonction de traitement de la requete d'affichage des commentaires d'un article en fonction de son Id
+ */
+ exports.deleteArticle = (req, res, next) => {
+    db.query('DELETE FROM groupomania.article WHERE id = ?',
+    [req.params.id],
+     (error, result) => {
+        if (error) {
+            return res.status(400).json({ error });
+        }
+        db.query('DELETE FROM groupomania.comment WHERE idArticle = ?',
+        [req.params.id],
+        (error, result) => {
+            if (error) {
+                return res.status(400).json({ error });
+            }
+            return res.status(200).json(result);
+        });
+    });
+};
+
+/**
+ * Fonction de traitement de la requete d'affichage des commentaires d'un article en fonction de son Id
+ */
+ exports.deleteComment = (req, res, next) => {
+    db.query('DELETE FROM groupomania.comment WHERE id = ?',
+    [req.params.id],
+     (error, result) => {
+        if (error) {
+            return res.status(400).json({ error });
+        }
+        return res.status(200).json(result);
+    });
+};

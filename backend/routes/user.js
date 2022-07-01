@@ -22,7 +22,7 @@ router.post('/signup', multer, userCtrl.signupUser);
 router.post('/login', userCtrl.loginUser);
 
 /**
- * Définition de la route /delete - X
+ * Définition de la route /delete - ok
  */
  router.post('/delete', auth, userCtrl.deleteUser);
 
@@ -34,7 +34,12 @@ router.get('/user', auth, userCtrl.getDataUser);
 /**
  * Définition de la route / pour une demande POST - X
  */
-router.post('/user', auth, userCtrl.modifyDataUser);
+router.post('/user/change', auth, userCtrl.modifyDataUser);
+
+/**
+ * Définition de la route / pour une demande GET - ok
+ */
+ router.get('/verifyuser', auth, userCtrl.VerifyUser);
 
 /**
  * Renvoie du résultat de la requete

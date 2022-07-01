@@ -11,7 +11,9 @@
 
 .articles {
     display:flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
     gap:20px;
 }
 
@@ -22,6 +24,7 @@
     padding:15px 30px;
     text-decoration: none;
     color: black;
+    width:500px;
 }
 
 .articleArticle {
@@ -33,30 +36,41 @@
 .article .top {
     display:flex;
     flex-direction:row;
+    justify-content: space-between;
+}
+
+.article .top .user {
+    display:flex;
+    flex-direction:row;
     gap:20px;
 }
 
-.article .top .texts {
+.article .top .user .texts {
     display:flex;
     flex-direction:column;
     gap:5px;
 }
 
-.article .top .texts .nameAuthorProfile {
+.article .top .user .texts .nameAuthorProfile {
     font-size:14px;
     font-weight: bold;
     margin:0;
 }
 
-.article .top .texts .informationsArticle {
+.article .top .user .texts .informationsArticle {
     font-size:12px;
     margin:0;
 }
 
-.article .top .pictureAuthorProfile {
+.article .top .user .pictureAuthorProfile {
     height:40px;
     width:40px;
     border-radius:50%;
+}
+
+.article .top .icons {
+    height:30px;
+    width:30px;
 }
 
 .article .content {
@@ -163,9 +177,18 @@
     border-radius:10px;
     padding:10px 15px;
     word-wrap: break-word;
+    display:flex;
+    flex-direction:row;
+    gap:10px;
+    justify-content: space-between;
 }
 
 .article .comments .comment .textComment {
     margin:0;
     width:100%;
+}
+
+.article .comments .comment .icons {
+    height:20px;
+    width:20px;
 }

@@ -23,9 +23,9 @@ export default function handleSubmit(event) {
                     return res.json();
                 }
                 return res.json().then(json => {throw new Error(json.error)})
-            }).catch(function(err) {
-                alert(err.message);
-        });
+            });
+
+        window.location.reload();
 
     } else {
         alert("Les entrées sont incorrectes, veuillez corriger le format de celles-ci !");

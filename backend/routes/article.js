@@ -27,7 +27,7 @@ router.get('/', articleCtrl.getArticles);
  router.get('/comment/:id', articleCtrl.getArticleComment);
 
 /**
- * Définition de la route / pour une demande POST - x
+ * Définition de la route / pour une demande POST - ok
  */
 router.post('/', auth, multer, articleCtrl.addArticle);
 
@@ -40,6 +40,16 @@ router.post('/like/:id', auth, articleCtrl.likeArticle);
  * Définition de la route / pour une demande POST - X
  */
 router.post('/comment/:id', auth, articleCtrl.addArticleComment);
+
+/**
+ * Définition de la route / pour une demande GET - ok
+ */
+ router.get('/delete/:id', auth, articleCtrl.deleteArticle);
+
+/**
+ * Définition de la route / pour une demande GET - ok
+ */
+ router.get('/deleteComment/:id', auth, articleCtrl.deleteComment);
 
 /**
  * Renvoie du résultat de la requete

@@ -5,20 +5,24 @@ export default function handleSubmit(event) {
         const token = sessionStorage.getItem('token');
 
         const myheaders = new Headers();
+        myheaders.append('Content-Type', 'application/json');
         myheaders.append('Authorization', `Bearer ${token}`);
 
-        const formData = new FormData();
-        formData.append('name', document.getElementById('name').value);
-        formData.append('email', document.getElementById('email').value);
-        formData.append('password', document.getElementById('mdp').value);
-
-        fetch("http://localhost:3001/api/auth/user", {
+        const json = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            password: document.getElementById('mdp').value
+        }
+        
+        fetch("http://localhost:3001/api/auth/user/change", {
             method: "POST",
-            body: formData,
-            headers: myheaders
+            headers: myheaders,
+            body: JSON.stringify(json)
         }).then(function(res) {
             console.log(res);
                 if (res.ok) {
+                    document.getElementById('mdp').value = "";
+                    alert("Les modifications ont bien été prises en compte !");
                     return res.json();
                 }
                 return res.json().then(json => {throw new Error(json.error)})
